@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Advanced PDF Toolkit</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f1f5f9;
+        font-family: Arial, sans-serif;
+      }
+
+      .navbar {
+        background: #172554;
+      }
+
+      .main-container {
+        max-width: 850px;
+        margin: 50px auto;
+        background: white;
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px #00000012;
+      }
+
+      .tool-btn {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid #dbeafe;
+        background: #eff6ff;
+        border-radius: 10px;
+        font-weight: bold;
+        color: #1d4ed8;
+      }
+
+      .tool-btn.active {
+        background: #2563eb;
+        color: white;
+      }
+
+      .upload-area {
+        border: 2px dashed #2563eb;
+        padding: 35px;
+        text-align: center;
+        background: #eff6ff;
+        border-radius: 12px;
+        margin-top: 25px;
+      }
+
+      .submit-btn {
+        width: 100%;
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: bold;
+      }
+
+      .submit-btn:hover {
+        background: #1d4ed8;
+      }
+
+      #result {
+        margin-top: 20px;
+      }
+
+      .file-name {
+        padding: 8px;
+        background: #f8fafc;
+        margin-top: 5px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="/">PDF Toolkit</a>
+        <a href="/history/" class="btn btn-outline-light">History</a>
+      </div>
+    </nav>
+
+    <div class="main-container">
+      <h2 class="text-center fw-bold">Advanced PDF Toolkit</h2>
+
+      <p class="text-center text-secondary">
+        Merge, split, compress and rotate your PDF files.
+      </p>
+
+      <hr />
+
+      <div class="row g-3">
+        <div class="col-6 col-md-3">
+          <button class="tool-btn active" data-operation="merge">
+            Merge PDF
+          </button>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <button class="tool-btn" data-operation="split">Split PDF</button>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <button class="tool-btn" data-operation="compress">
+            Compress PDF
+          </button>
+        </div>
+
+        <div class="col-6 col-md-3">
+          <button class="tool-btn" data-operation="rotate">Rotate PDF</button>
+        </div>
+      </div>
+
+      <form id="pdfForm">
+        {% csrf_token %}
+
+        <input type="hidden" name="operation" id="operation" value="merge" />
+
+        <div class="upload-area">
+          <h5>Upload Your PDF Files</h5>
+
+          <p class="text-secondary">Maximum 10 files, 30 MB total</p>
+
+          <input
+            type="file"
+            id="pdfFiles"
+            name="pdf_files"
+            class="form-control"
+            accept=".pdf,application/pdf"
+            multiple
+            required
+          />
+
+          <div id="fileList" class="mt-3"></div>
+        </div>
+
+        <div id="splitOptions" class="mt-4" hidden>
+          <label class="form-label"> Select pages to extract </label>
+
+          <input
+            type="text"
+            class="form-control"
+            name="page_range"
+            placeholder="Example: 1-3,5"
+          />
+
+          <small class="text-secondary">
+            Example: 1-3,5 means pages 1, 2, 3 and 5.
+          </small>
+        </div>
+
+        <div id="rotateOptions" class="mt-4" hidden>
+          <label class="form-label">Rotation angle</label>
+
+          <select name="degrees" class="form-select">
+            <option value="90">90 Degrees</option>
+            <option value="180">180 Degrees</option>
+            <option value="270">270 Degrees</option>
+          </select>
+        </div>
+
+        <button type="submit" id="processBtn" class="submit-btn mt-4">
+          Process PDF
+        </button>
+      </form>
+
+      <div class="progress mt-4" id="progressBox" hidden>
+        <div
+          id="progressBar"
+          class="progress-bar progress-bar-striped progress-bar-animated"
+          style="width: 100%"
+        >
+          Processing...
+        </div>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    {% load static %}
+    <script src="{% static 'pdfapp/ajax.js' %}"></script>
+  </body>
+</html>
